@@ -3,6 +3,11 @@ package br.com.fiap.fiapstock.controller;
 import br.com.fiap.fiapstock.dto.StockCreateUpdateDTO;
 import br.com.fiap.fiapstock.dto.StockDTO;
 import br.com.fiap.fiapstock.service.StockService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +24,13 @@ public class StockController {
     }
 
     @GetMapping
+    @Operation(description = "Listagem de ações por nome")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "ok"),
+                    @ApiResponse(responseCode = "404", description = "stocks.not.found")
+            }
+    )
     public List<StockDTO> findAll(
             @RequestParam(required = false, value = "nome") String nome
     ) {

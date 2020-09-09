@@ -1,6 +1,9 @@
 package br.com.fiap.fiapstock.dto;
 
+import br.com.fiap.fiapstock.model.Stock;
+
 import java.math.BigDecimal;
+import java.util.Date;
 
 public class StockDTO {
 
@@ -9,6 +12,18 @@ public class StockDTO {
     private String descricao;
     private BigDecimal valor;
     private Boolean ativo;
+    private Date dataCriacao;
+
+    public StockDTO(){}
+
+    public StockDTO(Stock stock) {
+        this.id = stock.getId();
+        this.nome = stock.getNome();
+        this.descricao = stock.getDescricao();
+        this.valor = stock.getValor();
+        this.ativo = stock.getAtivo();
+        this.dataCriacao = stock.getDataCriacao();
+    }
 
     public Long getId() {
         return id;
@@ -48,5 +63,13 @@ public class StockDTO {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public Date getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(Date dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 }

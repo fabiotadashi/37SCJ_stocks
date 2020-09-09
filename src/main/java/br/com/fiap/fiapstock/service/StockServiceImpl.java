@@ -2,6 +2,8 @@ package br.com.fiap.fiapstock.service;
 
 import br.com.fiap.fiapstock.dto.StockCreateUpdateDTO;
 import br.com.fiap.fiapstock.dto.StockDTO;
+import br.com.fiap.fiapstock.model.Stock;
+import br.com.fiap.fiapstock.repository.StockRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,20 +13,24 @@ import java.util.stream.Collectors;
 @Service
 public class StockServiceImpl implements StockService {
 
-    private List<StockDTO> stockDTOList = new ArrayList<>();
-
     private StockPriceCheck stockPriceCheck;
+    private StockRepository stockRepository;
 
-    public StockServiceImpl(StockPriceCheck stockPriceCheck){
+    public StockServiceImpl(
+            StockPriceCheck stockPriceCheck,
+            StockRepository stockRepository
+    ) {
         this.stockPriceCheck = stockPriceCheck;
+        this.stockRepository = stockRepository;
     }
 
     @Override
     public List<StockDTO> findAll(String search) {
-        return stockDTOList
+        String searchTerm = search == null ? "" : search;
+//        return stockRepository.findAllByNomeContainingAndAtivoIsTrue(searchTerm)
+        return stockRepository.buscaPorNome(searchTerm)
                 .stream()
-                .filter(stockDTO -> search == null || stockDTO.getNome().contains(search.toUpperCase()))
-                .filter(StockDTO::getAtivo)
+                .map(StockDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -35,7 +41,11 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public StockDTO create(StockCreateUpdateDTO stockCreateUpdateDTO) {
-        return null;
+        Stock stock = new Stock(stockCreateUpdateDTO);
+
+        Stock savedStock = stockRepository.save(stock);
+
+        return new StockDTO(savedStock);
     }
 
     @Override
