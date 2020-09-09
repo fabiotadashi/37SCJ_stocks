@@ -2,41 +2,34 @@ package br.com.fiap.fiapstock.controller;
 
 import br.com.fiap.fiapstock.dto.StockCreateUpdateDTO;
 import br.com.fiap.fiapstock.dto.StockDTO;
+import br.com.fiap.fiapstock.service.StockService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("stocks")
 public class StockController {
 
-    private List<StockDTO> stockDTOList = new ArrayList<>();
+    private final StockService stockService;
+
+    public StockController(StockService stockService) {
+        this.stockService = stockService;
+    }
 
     @GetMapping
     public List<StockDTO> findAll(
             @RequestParam(required = false, value = "nome") String nome
     ) {
-        return stockDTOList
-                .stream()
-                .filter(stockDTO -> nome == null || stockDTO.getNome().contains(nome.toUpperCase()))
-                .filter(StockDTO::getAtivo)
-                .collect(Collectors.toList());
+        return stockService.findAll(nome);
     }
 
     @GetMapping("{id}")
     public StockDTO getById(
             @PathVariable Long id
-    ){
-        return stockDTOList
-                .stream()
-                .filter(stockDTO -> stockDTO.getId().equals(id) && stockDTO.getAtivo())
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    ) {
+        return stockService.findById(id);
     }
 
     @PostMapping
@@ -44,16 +37,7 @@ public class StockController {
     public StockDTO create(
             @RequestBody StockCreateUpdateDTO stockCreateUpdateDTO
     ) {
-
-        StockDTO stockDTO = new StockDTO();
-        stockDTO.setId(stockDTOList.size() + 1L);
-        stockDTO.setNome(stockCreateUpdateDTO.getNome());
-        stockDTO.setDescricao(stockCreateUpdateDTO.getDescricao());
-        stockDTO.setValor(stockCreateUpdateDTO.getValor());
-        stockDTO.setAtivo(true);
-
-        stockDTOList.add(stockDTO);
-        return stockDTO;
+        return stockService.create(stockCreateUpdateDTO);
     }
 
     @PutMapping("{id}")
@@ -61,11 +45,7 @@ public class StockController {
             @RequestBody StockCreateUpdateDTO stockCreateUpdateDTO,
             @PathVariable Long id
     ) {
-        StockDTO stockDTO = getById(id);
-        stockDTO.setNome(stockCreateUpdateDTO.getNome());
-        stockDTO.setDescricao(stockCreateUpdateDTO.getDescricao());
-        stockDTO.setValor(stockCreateUpdateDTO.getValor());
-        return stockDTO;
+        return stockService.update(stockCreateUpdateDTO, id);
     }
 
     @DeleteMapping("{id}")
@@ -73,28 +53,7 @@ public class StockController {
     public void delete(
             @PathVariable Long id
     ) {
-        StockDTO stockDTO = getById(id);
-        stockDTO.setAtivo(false);
+        stockService.delete(id);
     }
 
-    // Mock list
-    public StockController() {
-        StockDTO stockDTO1 = new StockDTO();
-        stockDTO1.setId(1L);
-        stockDTO1.setNome("MGLU3");
-        stockDTO1.setDescricao("Magazine Luiza 3");
-        stockDTO1.setAtivo(true);
-        stockDTO1.setValor(BigDecimal.valueOf(20.4));
-
-        StockDTO stockDTO2 = new StockDTO();
-        stockDTO2.setId(2L);
-        stockDTO2.setNome("ITSA3");
-        stockDTO2.setDescricao("Itausa");
-        stockDTO2.setAtivo(true);
-        stockDTO2.setValor(BigDecimal.valueOf(19.2));
-
-        stockDTOList.add(stockDTO1);
-        stockDTOList.add(stockDTO2);
-
-    }
 }
