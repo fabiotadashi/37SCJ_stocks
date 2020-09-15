@@ -4,7 +4,9 @@ import br.com.fiap.fiapstock.dto.StockCreateUpdateDTO;
 import br.com.fiap.fiapstock.dto.StockDTO;
 import br.com.fiap.fiapstock.model.Stock;
 import br.com.fiap.fiapstock.repository.StockRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +38,8 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public StockDTO findById(Long id) {
-        return null;
+        Stock stock = getStockById(id);
+        return new StockDTO(stock);
     }
 
     @Override
@@ -50,11 +53,26 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public StockDTO update(StockCreateUpdateDTO stockCreateUpdateDTO, Long id) {
-        return null;
+        Stock stock = getStockById(id);
+        stock.setNome(stockCreateUpdateDTO.getNome());
+        stock.setDescricao(stockCreateUpdateDTO.getDescricao());
+        stock.setValor(stockCreateUpdateDTO.getValor());
+
+        Stock savedStock = stockRepository.save(stock);
+
+        return new StockDTO(savedStock);
     }
 
     @Override
     public void delete(Long id) {
-
+        Stock stock = getStockById(id);
+        stock.setAtivo(false);
+        stockRepository.save(stock);
     }
+
+    private Stock getStockById(Long id) {
+        return stockRepository.findByIdAndAtivoIsTrue(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
 }
