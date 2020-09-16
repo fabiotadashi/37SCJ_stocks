@@ -11,3 +11,7 @@ spring:
     password: fiap
   jpa:
     show-sql: true
+
+jwt:
+  secret: f1aPs3cr37
+  expire: 5
