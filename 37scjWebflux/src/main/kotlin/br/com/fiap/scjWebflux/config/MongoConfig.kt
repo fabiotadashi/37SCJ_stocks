@@ -20,7 +20,8 @@ class MongoConfig : AbstractReactiveMongoConfiguration() {
    @Bean
    fun mongoClient(): MongoClient = MongoClients.create()
 
+   // TODO verificar erro
    @Bean
-   fun reactiveMongoTemplate() = ReactiveMongoTemplate(mongoClient(), databaseName)
+   override fun reactiveMongoTemplate() = ReactiveMongoTemplate(mongoClient(), databaseName)
 
 }
