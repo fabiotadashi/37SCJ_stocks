@@ -1,5 +1,6 @@
 package br.com.fiap.fiapstock.service;
 
+import br.com.fiap.fiapstock.config.CloudConfigProperties;
 import br.com.fiap.fiapstock.dto.AuthDTO;
 import br.com.fiap.fiapstock.dto.JwtDTO;
 import br.com.fiap.fiapstock.dto.UserCreateDTO;
@@ -23,15 +24,18 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
+    private CloudConfigProperties cloudConfigProperties;
 
     public UserServiceImpl(JwtTokenUtil jwtTokenUtil,
                            AuthenticationManager authenticationManager,
                            PasswordEncoder passwordEncoder,
-                           UserRepository userRepository){
+                           UserRepository userRepository,
+                           CloudConfigProperties cloudConfigProperties){
         this.jwtTokenUtil = jwtTokenUtil;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.cloudConfigProperties = cloudConfigProperties;
     }
 
     @Override
@@ -44,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
         UserDTO userDTO = new UserDTO();
         userDTO.setId(savedUser.getId());
-        userDTO.setUsername(savedUser.getUsername());
+        userDTO.setUsername(savedUser.getUsername() + ". " +cloudConfigProperties.getRemoteFile());
 
         return userDTO;
     }

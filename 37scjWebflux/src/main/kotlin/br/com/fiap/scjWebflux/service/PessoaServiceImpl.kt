@@ -14,7 +14,7 @@ class PessoaServiceImpl(
         private val pessoaRepository: PessoaRepository
 ) : PessoaService {
 
-    override fun create(createPessoaDTO: CreatePessoaDTO) = Mono.create<CreatePessoaDTO> { createPessoaDTO }
+    override fun create(createPessoaDTO: CreatePessoaDTO) = Mono.just( createPessoaDTO )
             .map {
                 PessoaDocument(nome = createPessoaDTO.nome ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST))
             }
